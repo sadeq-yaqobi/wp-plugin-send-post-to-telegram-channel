@@ -1,5 +1,5 @@
 <?php
-/*Plugin Name: share post on telegram
+/*Plugin Name: انتشار پست‌ها در کانال تلگرام
 Plugin URI: http://siteyar.net/plugins/
 Description:  پلاگین انتشار پست‌ها در کانال تلگرام
 Author: sadeq yaqobi
@@ -18,6 +18,7 @@ const TSP_PLUGIN_INC = TSP_PLUGIN_DIR . '_inc/';
 const TSP_PLUGIN_VIEW = TSP_PLUGIN_DIR . 'view/';
 const TSP_PLUGIN_ASSETS_DIR = TSP_PLUGIN_DIR . 'assets/';
 const TSP_PLUGIN_CLASS_DIR = TSP_PLUGIN_DIR . 'class/';
+const TSP_PLUGIN_HELPER_CLASS_DIR = TSP_PLUGIN_DIR . 'helper-class/';
 const TSP_PLUGIN_ASSETS_URL = TSP_PLUGIN_URL . 'assets/';
 
 /**
@@ -73,4 +74,7 @@ register_deactivation_hook(__FILE__,'tsp_deactivation_functions');*/
 
 require_once TSP_PLUGIN_CLASS_DIR . 'TelegramApi.php';
 
+//TelegramApi::send_post_to_telegram_channel();
+add_action('publish_post', 'TelegramApi::send_post_to_telegram_channel', 10, 2);
+add_action('publish_tech', 'TelegramApi::send_post_to_telegram_channel',10,2);
 
