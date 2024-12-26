@@ -2,25 +2,42 @@
 
 class TelegramApi
 {
-    protected static $botToken = 'bot7062509197:AAEE5lwf1eNG-v4rpiRoadHnARLKogrf9UE';
 
     protected static $baseURL = 'https://api.telegram.org';
-    protected static $chat_id = '@siteyar_theme';
 
-    public static function send_post_to_telegram_channel($ID,$post)
+
+    public static function send_post_to_telegram_channel($ID, $post)
     {
-        $text ='
-        <a href="'.get_the_permalink().'">'.get_the_title().'</a>
-        <p>'.wp_trim_words($post->post_content,60,"...").'</p>
-        ';
-        self::connect_to_api(self::$chat_id,$text);
+        $caption = '
+        <a href="' . get_the_permalink() . '">' . get_the_title() . '</a>' . PHP_EOL
+            . wp_trim_words($post->post_content, 60, "...");
+
+
+        $photo = get_the_post_thumbnail_url();
+
+        // because of using local server we need to change the url to the real url
+        $photo = str_replace('http://7learn-wp.local', 'https://theme.siteyar.net/siteyar', $photo);
+
+        $chat_id = get_option('_tsp_option_name')['_tsp_chat_id'];
+        self::connect_to_api($chat_id, $photo, $caption);
     }
 
-    public static function connect_to_api($chat_id, $text)
+    public static function connect_to_api($chat_id, $photo, $caption)
     {
-        $request_url = self::$baseURL . '/' . self::$botToken . '/sendMessage?chat_id=' . $chat_id . '&text=' . $text;
+        $query_string = http_build_query([
+            'chat_id' => $chat_id,
+            'photo' => $photo,
+            'parse_mode' => 'HTML', // to parse html tags in caption
+            'caption' => $caption,
+//            'protect_content'=>1 // to avoid saving and forwarding content
+        ]);
 
-        $response=wp_remote_get($request_url);
+        $botToken  ='bot'. get_option('_tsp_option_name')['_tsp_bot_token'];
+
+        $request_url = self::$baseURL . '/' . $botToken . '/sendPhoto?' . $query_string;
+
+
+        $response = wp_remote_get($request_url);
 
 
         if (is_array($response) && !is_wp_error($response)) {
@@ -30,28 +47,7 @@ class TelegramApi
         }
     }
 }
-//function prettyDebug($var) {
-//    echo '<pre style="
-//direction: ltr;
-//        background: #1e1e1e;
-//        color: #d4d4d4;
-//        padding: 15px;
-//        border-radius: 5px;
-//        font-family: Consolas, Monaco, monospace;
-//        font-size: 14px;
-//        line-height: 1.4;
-//        margin: 10px 0;
-//        border: 1px solid #404040;
-//        overflow: auto;
-//    ">';
-//
-//    if (is_array($var) || is_object($var)) {
-/*        highlight_string("<?php\n" . var_export($var, true) . ";\n?>");*/
-//    } else {
-//        var_dump($var);
-//    }
-//    echo '</pre>';
-//}
+
 
 
 
