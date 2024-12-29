@@ -15,8 +15,10 @@ class TelegramApi
 
         $photo = get_the_post_thumbnail_url();
 
+        if (str_contains($photo, 'local') || str_contains($photo, 'localhost')) {
         // because of using local server we need to change the url to the real url
         $photo = str_replace('http://7learn-wp.local', 'https://theme.siteyar.net/siteyar', $photo);
+        }
 
         $chat_id = get_option('_tsp_option_name')['_tsp_chat_id'];
         self::connect_to_api($chat_id, $photo, $caption);
